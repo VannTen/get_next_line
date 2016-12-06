@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2016/12/05 16:30:37 by mgautier         ###   ########.fr       */
+/*   Updated: 2016/12/06 15:58:30 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,16 @@ int				get_next_line(const int fd, char **line)
 	ft_strdel(next_line);
 	return (reading_result);
 }
+
+/*
+** Ft_cache_file
+**
+** This function read from a file descriptor (usigne the syscall 'read'
+** until is has at least one valid line (depending on BUF_SIZE and the lenght
+** of the line in the file, that can take several calls.
+** If, on the contrary, multiples lines are read, they are split into a string
+** array.
+*/
 
 t_file_cache	ft_cache_file(const int fd, const t_database db)
 {
