@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2016/12/06 15:58:30 by mgautier         ###   ########.fr       */
+/*   Updated: 2016/12/07 14:32:09 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int				get_next_line(const int fd, char **line)
 }
 
 /*
-** Ft_cache_file
+** ft_cache_file
 **
 ** This function read from a file descriptor (usigne the syscall 'read'
 ** until is has at least one valid line (depending on BUF_SIZE and the lenght
@@ -61,6 +61,42 @@ t_file_cache	ft_cache_file(const int fd, const t_database db)
 		lines[0] = ft_strjoin(incomplete_line, lines[0]);
 	}
 	return (ft_store_cache(fd, db, incomplete_line));
+}
+
+/*
+** ft_read_file
+**
+** This function populate the file_cache with the next line, calling itself
+** recursively until is has at least one complete line (aka, one finished
+** with a newline or EOF
+** It creates a new line from the previous incomplete one, until either the file
+** is finished, or a newline character is found.
+*/
+
+t_file_cache	*ft_read_file(t_file_cache *file_cache)
+{
+	char	*incomplete_line;
+	char	*complete_line;
+	char	buf[BUF_SIZE + 1];
+
+	incomplete_line = (char*)file_cache->lines->content;
+	oct_read = read(file_cache->fd, &buf, BUF_SIZE);
+	if (oct_read == -1)
+		return (NULL);
+	buf[oct_read] = '\0';
+	complete_line = ft_strtjoin(incomplete_line, buf,
+			ft_strlen(incomplete_line) + oct_read);
+	ft_strdel(incomplete_line);
+	free(file_cache->lines);
+	file_cache->lines = ft_strsplit_list(complete_line, '\n');
+	if (file_cache->lines->next != NULL || oct_read != BUF_SIZE)
+	{
+		if (oct_read != BUF_SIZE)
+			file_cache->file_is_over = TRUE;
+		return (file_cache);
+	}
+	else
+		return (ft_read_file(file_cache));
 }
 
 t_file_cache	ft_store_cache(const int fd, const t_database db,
