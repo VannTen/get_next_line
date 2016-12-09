@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2016/12/09 18:26:19 by mgautier         ###   ########.fr       */
+/*   Updated: 2016/12/09 18:49:56 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,24 +127,18 @@ int				*ft_read_file(char **line_to_complete, int fd)
 	return (oct_read);
 }
 
-t_file_cache	ft_store_cache(const int fd, const t_database db,
-		const char *buffer , const t_bool file_is_over);
+t_file_cache	*ft_create_file_cache(const int fd, const t_database db)
 {
-	t_file_cache	file_cache;
+	t_file_cache	*file;
 
-	file_cache = (t_file_cache*)ft_memalloc(sizeof(t_file_cache));
-	if (file_cache == NULL)
-		return (NULL);
-	file_cache->lines = ft_strsplit_empty(buffer, '\n');
-	file_cache->end_is_line = (last_char(buffer) == '\n');
-	file_cache->file_is_over = file_is_over;
-	file_cache->key = fd;
-	if (db->add(file_cache) == NULL)
+	file->fd = fd;
+	file->lines = NULL;
+	file->is_over = FALSE;
+	if (db->add(file) == NULL)
 	{
-		ft_freetab(file_cache->lines);
-		free(file_cache);
-		file_cache = NULL;
+		file->fd = 0;
+		free(file);
+		file = NULL;
 	}
-	return (file_cache);
+	return (file);
 }
-
