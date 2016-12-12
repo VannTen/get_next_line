@@ -6,62 +6,12 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2016/12/12 15:11:44 by mgautier         ###   ########.fr       */
+/*   Updated: 2016/12/12 17:44:34 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "get_next_line.h"
-
-int				get_next_line(const int fd, char **line)
-{
-	static const t_database	database = new(database);
-	t_file_cache			*file_cache;
-	char					*next_line;
-	int						reading_result
-
-		file_cache = (t_file_cache*)database->find(fd);
-	if (file_cache == NULL)
-		file_cache = ft_cache_file(fd, database);
-	if (file_cache == NULL)
-		return (ERROR);
-	reading_result = read_from_cache(database, file_cache, &next_line);
-	*line = ft_strdup(next_line);
-	ft_strdel(next_line);
-	return (reading_result);
-}
-
-/*
-** ft_read_cache
-**
-** This function reads a file cache, and put the next line of it in str ;
-** if necessary, it reads from the associated file, using ft_read_file.
-*/
-
-int				ft_read_cache(t_file_cache *file, char **line)
-{
-	t_lst	*next_link;
-	int		read_result;
-	char	*bufferized_line;
-
-	bufferized_line = (char*)pop(file->lines);
-	if (file->is_over)
-	{
-		if (bufferized_line == NULL)
-			return (FILE_IS_OVER);
-	}
-	else if (file->lines == NULL)
-	{
-		read_result = ft_read_file(&bufferized_line, file->fd);
-		file->lines = ft_strsplit_lst(bufferized_line);
-		if (read_result == READ_ERROR || file->lines == NULL)
-			return (READ_ERROR);
-		else if (read_result != BUF_SIZE)
-			file->is_over = TRUE;
-	}
-	*line = bufferized_line;
-	return (ONE_LINE_READ);
-}
 
 /*
 ** ft_read_file
@@ -99,13 +49,44 @@ int				ft_read_file(char **line_to_complete, int fd)
 }
 
 /*
+** ft_read_cache
+**
+** This function reads a file cache, and put the next line of it in str ;
+** if necessary, it reads from the associated file, using ft_read_file.
+*/
+
+int				ft_read_cache(t_file_cache *file, char **line)
+{
+	int		read_result;
+	char	*bufferized_line;
+
+	bufferized_line = (char*)ft_pop(file->lines);
+	if (file->is_over)
+	{
+		if (bufferized_line == NULL)
+			return (FILE_IS_OVER);
+	}
+	else if (file->lines == NULL)
+	{
+		read_result = ft_read_file(&bufferized_line, file->fd);
+		file->lines = ft_strsplit_lst(bufferized_line);
+		if (read_result == READ_ERROR || file->lines == NULL)
+			return (READ_ERROR);
+		else if (read_result != BUF_SIZE)
+			file->is_over = TRUE;
+	}
+	*line = bufferized_line;
+	return (ONE_LINE_READ);
+}
+
+/*
 ** ft_create_file_cache
 **
 ** Allocate and initialize the data struct for file cache (which will keep
 ** a buffer for each file currently read);
 */
 
-t_file_cache	*ft_create_file_cache(const int fd, const t_database db)
+t_file_cache	*ft_create_file_cache(const int fd, const t_database *db)
 {
 	t_file_cache	*file;
 
@@ -119,4 +100,19 @@ t_file_cache	*ft_create_file_cache(const int fd, const t_database db)
 		file = NULL;
 	}
 	return (file);
+}
+
+int				get_next_line(const int fd, char **line)
+{
+	static t_lst	*search_list = NULL;
+	t_file_cache	*file_cache;
+	int				reading_result;
+
+	file_cache = ft_search_list(search_list, &same_fd);
+	if (file_cache == NULL)
+		file_cache = ft_create_file_cache(fd, search_list);
+	if (file_cache == NULL)
+		return (READ_ERROR);
+	reading_result = ft_read_cache(file_cache, line);
+	return (reading_result);
 }
