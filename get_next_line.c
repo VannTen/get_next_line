@@ -6,9 +6,12 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2016/12/12 12:20:19 by mgautier         ###   ########.fr       */
+/*   Updated: 2016/12/12 15:11:44 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "libft.h"
+#include "get_next_line.h"
 
 int				get_next_line(const int fd, char **line)
 {
@@ -35,34 +38,29 @@ int				get_next_line(const int fd, char **line)
 ** if necessary, it reads from the associated file, using ft_read_file.
 */
 
-int				ft_read_cache(t_file_cache file, char **str)
+int				ft_read_cache(t_file_cache *file, char **line)
 {
 	t_lst	*next_link;
-	char	*str;
 	int		read_result;
+	char	*bufferized_line;
 
-	str = pop(file->lines);
-	if (lines != NULL || file->is_over)
-		return (ONE_LINE_READ);
-}
-
-int			ft_complete_line(t_file_cache file, char **str)
-{
-	int	read_return;
-
-	read_return == 0;
-	while (ft_strchr(*str, LINE_DELIMITER) == NULL)
+	bufferized_line = (char*)pop(file->lines);
+	if (file->is_over)
 	{
-		read_return = ft_read_file(str, file->fd);
-		if (read_return == READ_ERROR)
-			break ;
-		else if (read_return != BUF_SIZE)
-		{
-			file->is_over == TRUE;
-			break ;
-		}
+		if (bufferized_line == NULL)
+			return (FILE_IS_OVER);
 	}
-	return (read_return);
+	else if (file->lines == NULL)
+	{
+		read_result = ft_read_file(&bufferized_line, file->fd);
+		file->lines = ft_strsplit_lst(bufferized_line);
+		if (read_result == READ_ERROR || file->lines == NULL)
+			return (READ_ERROR);
+		else if (read_result != BUF_SIZE)
+			file->is_over = TRUE;
+	}
+	*line = bufferized_line;
+	return (ONE_LINE_READ);
 }
 
 /*
@@ -74,11 +72,12 @@ int			ft_complete_line(t_file_cache file, char **str)
 ** It does so until it find a line delimiter or the end of the file.
 */
 
-int				*ft_read_file(char **line_to_complete, int fd)
+int				ft_read_file(char **line_to_complete, int fd)
 {
 	char	buf[BUF_SIZE + 1];
 	char	*completed_line;
 	t_bool	is_complete;
+	int		oct_read;
 
 	is_complete = FALSE;
 	while (is_complete == FALSE)
@@ -89,13 +88,22 @@ int				*ft_read_file(char **line_to_complete, int fd)
 		buf[oct_read] = '\0';
 		completed_line = ft_strtjoin(*line_to_complete, buf,
 				ft_strlen(*line_to_complete) + oct_read);
-		ft_strdel(*line_to_complete);
+		if (completed_line == NULL)
+			return (READ_ERROR);
+		ft_strdel(line_to_complete);
 		*line_to_complete = completed_line;
 		if (ft_strchr(buf, LINE_DELIMITER) != NULL || oct_read != BUF_SIZE)
-			is_complete == TRUE;
+			is_complete = TRUE;
 	}
 	return (oct_read);
 }
+
+/*
+** ft_create_file_cache
+**
+** Allocate and initialize the data struct for file cache (which will keep
+** a buffer for each file currently read);
+*/
 
 t_file_cache	*ft_create_file_cache(const int fd, const t_database db)
 {
