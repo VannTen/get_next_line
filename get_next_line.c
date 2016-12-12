@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2016/12/09 18:52:19 by mgautier         ###   ########.fr       */
+/*   Updated: 2016/12/12 12:20:19 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,32 +41,29 @@ int				ft_read_cache(t_file_cache file, char **str)
 	char	*str;
 	int		read_result;
 
-	if (file->lines == NULL)
-	{
-		if (file->is_over)
-			return (FILE_IS_OVER);
-		else
-			file->lines = ft_lstnew_nocpy(NULL);
-	}
-	while (file->lines->next == NULL && file->is_over == FALSE)
-	{
-		str = (char*)lines->content;
-		free(lines);
-		lines = NULL;
-		read_result = ft_read_file(&str, file->fd);
-		if (read_result == FILE_IS_OVER)
-			file->is_over = TRUE;
-		else if (read_result == READ_ERROR)
-			return (READ_ERROR);
-		lines = ft_strplit_lst(str);
-	}
-	*str = (char*)file->lines->content;
-	next_link = file->lines->next;
-	free(file->lines);
-	file->lines = next_link;
-	return (ONE_LINE_READ);
+	str = pop(file->lines);
+	if (lines != NULL || file->is_over)
+		return (ONE_LINE_READ);
 }
 
+int			ft_complete_line(t_file_cache file, char **str)
+{
+	int	read_return;
+
+	read_return == 0;
+	while (ft_strchr(*str, LINE_DELIMITER) == NULL)
+	{
+		read_return = ft_read_file(str, file->fd);
+		if (read_return == READ_ERROR)
+			break ;
+		else if (read_return != BUF_SIZE)
+		{
+			file->is_over == TRUE;
+			break ;
+		}
+	}
+	return (read_return);
+}
 
 /*
 ** ft_read_file
@@ -74,21 +71,29 @@ int				ft_read_cache(t_file_cache file, char **str)
 ** This function take an incomplete line, read from the file descriptor, and
 ** appends which was read to the end on the incomplete line, by joining it with
 ** the buffer and replacing it by mean of a pointer.
+** It does so until it find a line delimiter or the end of the file.
 */
 
 int				*ft_read_file(char **line_to_complete, int fd)
 {
 	char	buf[BUF_SIZE + 1];
 	char	*completed_line;
+	t_bool	is_complete;
 
-	oct_read = read(fd, &buf, BUF_SIZE);
-	if (oct_read == READ_ERROR)
-		return (READ_ERROR);
-	buf[oct_read] = '\0';
-	completed_line = ft_strtjoin(*line_to_complete, buf,
-			ft_strlen(*line_to_complete) + oct_read);
-	ft_strdel(*line_to_complete);
-	*line_to_complete = completed_line;
+	is_complete = FALSE;
+	while (is_complete == FALSE)
+	{
+		oct_read = read(fd, &buf, BUF_SIZE);
+		if (oct_read == READ_ERROR)
+			return (READ_ERROR);
+		buf[oct_read] = '\0';
+		completed_line = ft_strtjoin(*line_to_complete, buf,
+				ft_strlen(*line_to_complete) + oct_read);
+		ft_strdel(*line_to_complete);
+		*line_to_complete = completed_line;
+		if (ft_strchr(buf, LINE_DELIMITER) != NULL || oct_read != BUF_SIZE)
+			is_complete == TRUE;
+	}
 	return (oct_read);
 }
 
