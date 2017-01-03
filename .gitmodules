@@ -1,3 +1,8 @@
 [submodule "libft"]
 	path = libft
 	url = https://github.com/VannTen/libft.git
+	branch = adding_lst_functions
+[submodule "test"]
+	path = test
+	url = https://github.com/VannTen/test.git
+	branch = gnl
