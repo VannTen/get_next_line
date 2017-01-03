@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/03 16:11:34 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/03 18:02:38 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,23 @@ int				ft_read_file(char **line_to_complete, int fd)
 	char	*completed_line;
 	t_bool	is_complete;
 	int		oct_read;
+	int		length;
 
 	is_complete = FALSE;
-	while (is_complete == FALSE)
+	length = (*line_to_complete == NULL) ? 0 : ft_strlen(*line_to_complete);
+	while (!is_complete)
 	{
 		oct_read = read(fd, &buf, BUF_SIZE);
 		if (oct_read == READ_ERROR)
 			return (READ_ERROR);
 		buf[oct_read] = '\0';
-		completed_line = f_strljoin(*line_to_complete, buf,
-				ft_strlen(*line_to_complete) + oct_read);
+		length+= oct_read;
+		completed_line = f_strljoin(*line_to_complete, buf, length);
 		if (completed_line == NULL)
 			return (READ_ERROR);
 		ft_strdel(line_to_complete);
 		*line_to_complete = completed_line;
-		if (ft_strchr(buf, LINE_DELIMITER) != NULL || oct_read != BUF_SIZE)
-			is_complete = TRUE;
+		is_complete = (ft_memchr(buf, LINE_DELIMITER, oct_read) != NULL || oct_read != BUF_SIZE);
 	}
 	return (oct_read);
 }
