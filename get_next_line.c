@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/03 18:02:38 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/04 12:58:43 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ int				ft_read_file(char **line_to_complete, int fd)
 		if (oct_read == READ_ERROR)
 			return (READ_ERROR);
 		buf[oct_read] = '\0';
-		length+= oct_read;
-		completed_line = f_strljoin(*line_to_complete, buf, length);
+		completed_line = f_strljoin(*line_to_complete, buf, length, oct_read);
 		if (completed_line == NULL)
 			return (READ_ERROR);
+		length+= oct_read;
 		ft_strdel(line_to_complete);
 		*line_to_complete = completed_line;
 		is_complete = (ft_memchr(buf, LINE_DELIMITER, oct_read) != NULL || oct_read != BUF_SIZE);
@@ -71,10 +71,12 @@ int				ft_read_cache(t_file_cache *file, char **line)
 	{
 		read_result = ft_read_file(&bufferized_line, file->fd);
 		file->lines = f_strsplit_lst(bufferized_line, LINE_DELIMITER);
+		ft_strdel(&bufferized_line);
 		if (read_result == READ_ERROR || file->lines == NULL)
 			return (READ_ERROR);
 		else if (read_result != BUF_SIZE)
 			file->is_over = TRUE;
+		bufferized_line = (char*)f_lstpop(&file->lines);
 	}
 	*line = bufferized_line;
 	return (ONE_LINE_READ);
@@ -87,7 +89,7 @@ int				ft_read_cache(t_file_cache *file, char **line)
 ** a buffer for each file currently read);
 */
 
-t_file_cache	*ft_create_file_cache(const int fd, t_lst *db)
+t_file_cache	*ft_create_file_cache(const int fd, t_lst **db)
 {
 	t_file_cache	*file;
 
@@ -97,7 +99,7 @@ t_file_cache	*ft_create_file_cache(const int fd, t_lst *db)
 		file->fd = fd;
 		file->lines = NULL;
 		file->is_over = FALSE;
-		if (f_lstpush(file, &db) == NULL)
+		if (f_lstpush(file, db) == NULL)
 		{
 			file->fd = 0;
 			free(file);
@@ -120,7 +122,7 @@ int				get_next_line(const int fd, char **line)
 
 	file_cache = (t_file_cache*)f_lstsearch(search_list, fd, &get_fd);
 	if (file_cache == NULL)
-		file_cache = ft_create_file_cache(fd, search_list);
+		file_cache = ft_create_file_cache(fd, &search_list);
 	if (file_cache == NULL)
 		return (READ_ERROR);
 	reading_result = ft_read_cache(file_cache, line);
