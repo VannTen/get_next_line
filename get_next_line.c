@@ -6,12 +6,12 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/04 16:12:46 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/04 18:13:33 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "get_next_line.h"
+#include "libft.h"
 
 /*
 ** ft_read_file
