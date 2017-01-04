@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/04 12:58:43 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/04 16:12:46 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,11 @@ int				ft_read_file(char **line_to_complete, int fd)
 		completed_line = f_strljoin(*line_to_complete, buf, length, oct_read);
 		if (completed_line == NULL)
 			return (READ_ERROR);
-		length+= oct_read;
+		length += oct_read;
 		ft_strdel(line_to_complete);
 		*line_to_complete = completed_line;
-		is_complete = (ft_memchr(buf, LINE_DELIMITER, oct_read) != NULL || oct_read != BUF_SIZE);
+		is_complete = (ft_memchr(buf, LINE_DELIMITER, oct_read) != NULL
+					|| oct_read != BUF_SIZE);
 	}
 	return (oct_read);
 }
