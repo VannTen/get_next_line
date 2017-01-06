@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/06 14:22:39 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/06 18:10:14 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,8 @@ int				ft_read_cache(t_file_cache *file, char **line)
 	int		read_result;
 	char	*bufferized_line;
 
-	read_result = ONE_LINE_READ;
 	bufferized_line = (char*)f_lstpop(&file->lines);
-	if (file->is_over)
-	{
-		if (bufferized_line == NULL)
-			read_result = FILE_IS_OVER;
-	}
-	else if (file->lines == NULL)
+	if (file->lines == NULL)
 	{
 		read_result = ft_read_file(&bufferized_line, file->fd);
 		file->lines = f_strsplit_lst(bufferized_line, LINE_DELIMITER);
@@ -80,8 +74,14 @@ int				ft_read_cache(t_file_cache *file, char **line)
 			file->is_over = TRUE;
 		bufferized_line = (char*)f_lstpop(&file->lines);
 	}
+	if (file->is_over)
+	{
+		if (bufferized_line == NULL
+				|| (file->lines == NULL && *bufferized_line == '\0'))
+			return (FILE_IS_OVER);
+	}
 	*line = bufferized_line;
-	return (read_result);
+	return (ONE_LINE_READ);
 }
 
 /*
