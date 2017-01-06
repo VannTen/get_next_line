@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/04 18:13:33 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/06 14:22:39 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int				ft_read_file(char **line_to_complete, int fd)
 /*
 ** ft_read_cache
 **
-** This function reads a file cache, and put the next line of it in str ;
+** This function reads a file cache, and put the next line of it in line ;
 ** if necessary, it reads from the associated file, using ft_read_file.
 */
 
@@ -62,11 +62,12 @@ int				ft_read_cache(t_file_cache *file, char **line)
 	int		read_result;
 	char	*bufferized_line;
 
+	read_result = ONE_LINE_READ;
 	bufferized_line = (char*)f_lstpop(&file->lines);
 	if (file->is_over)
 	{
 		if (bufferized_line == NULL)
-			return (FILE_IS_OVER);
+			read_result = FILE_IS_OVER;
 	}
 	else if (file->lines == NULL)
 	{
@@ -80,7 +81,7 @@ int				ft_read_cache(t_file_cache *file, char **line)
 		bufferized_line = (char*)f_lstpop(&file->lines);
 	}
 	*line = bufferized_line;
-	return (ONE_LINE_READ);
+	return (read_result);
 }
 
 /*
@@ -121,6 +122,8 @@ int				get_next_line(const int fd, char **line)
 	t_file_cache	*file_cache;
 	int				reading_result;
 
+	if (line == NULL)
+		return (READ_ERROR);
 	file_cache = (t_file_cache*)f_lstsearch(search_list, fd, &get_fd);
 	if (file_cache == NULL)
 		file_cache = ft_create_file_cache(fd, &search_list);
