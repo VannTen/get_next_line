@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/06 18:23:03 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/04 18:14:39 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/06 15:03:46 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,5 @@ typedef struct	s_file_cache
 	int		fd;
 }				t_file_cache;
 
+int				get_next_line(const int fd, char **line);
 #endif
