@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/11 18:30:31 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/11 18:51:03 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,12 +136,14 @@ int				get_next_line(const int fd, char **line)
 		return (READ_ERROR);
 	file_cache = (t_file_cache*)f_lstsearch(search_list, fd, &get_fd);
 	if (file_cache == NULL)
+	{
 		file_cache = (t_file_cache*)malloc(sizeof(t_file_cache));
+		file_cache->fd = fd;
+		file_cache->lines = NULL;
+		file_cache->is_over = FALSE;
+	}
 	if (file_cache == NULL)
 		return (READ_ERROR);
-	file_cache->fd = fd;
-	file_cache->lines = NULL;
-	file_cache->is_over = FALSE;
 	if (f_lstpush(file_cache, &search_list) == NULL)
 	{
 		cache_dtor(file_cache);
