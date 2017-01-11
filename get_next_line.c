@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/06 18:10:14 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/11 18:30:31 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int				ft_read_file(char **line_to_complete, int fd)
 		ft_strdel(line_to_complete);
 		*line_to_complete = completed_line;
 		is_complete = (ft_memchr(buf, LINE_DELIMITER, oct_read) != NULL
-					|| oct_read != BUF_SIZE);
+				|| oct_read != BUF_SIZE);
 	}
 	return (oct_read);
 }
@@ -111,6 +111,16 @@ t_file_cache	*ft_create_file_cache(const int fd, t_lst **db)
 	return (file);
 }
 
+void			cache_dtor(void *cache_)
+{
+	t_file_cache *cache;
+	cache = (t_file_cache*)cache_;
+	cache->fd = 0;
+	f_lstdel(&cache->lines, ft_gen_strdel);
+	cache->lines = NULL;
+	free(cache);
+}
+
 int				get_fd(const t_lst *file_cache)
 {
 	return (((t_file_cache*)file_cache->content)->fd);
@@ -126,9 +136,19 @@ int				get_next_line(const int fd, char **line)
 		return (READ_ERROR);
 	file_cache = (t_file_cache*)f_lstsearch(search_list, fd, &get_fd);
 	if (file_cache == NULL)
-		file_cache = ft_create_file_cache(fd, &search_list);
+		file_cache = (t_file_cache*)malloc(sizeof(t_file_cache));
 	if (file_cache == NULL)
 		return (READ_ERROR);
+	file_cache->fd = fd;
+	file_cache->lines = NULL;
+	file_cache->is_over = FALSE;
+	if (f_lstpush(file_cache, &search_list) == NULL)
+	{
+		cache_dtor(file_cache);
+		return (READ_ERROR);
+	}
 	reading_result = ft_read_cache(file_cache, line);
+	if (reading_result == FILE_IS_OVER)
+		f_lstremoveif_one(&search_list, fd, &get_fd, &cache_dtor);
 	return (reading_result);
 }
