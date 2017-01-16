@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/11 18:51:03 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/16 12:01:34 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,36 +84,10 @@ int				ft_read_cache(t_file_cache *file, char **line)
 	return (ONE_LINE_READ);
 }
 
-/*
-** ft_create_file_cache
-**
-** Allocate and initialize the data struct for file cache (which will keep
-** a buffer for each file currently read);
-*/
-
-t_file_cache	*ft_create_file_cache(const int fd, t_lst **db)
-{
-	t_file_cache	*file;
-
-	file = (t_file_cache*)malloc(sizeof(t_file_cache));
-	if (file != NULL)
-	{
-		file->fd = fd;
-		file->lines = NULL;
-		file->is_over = FALSE;
-		if (f_lstpush(file, db) == NULL)
-		{
-			file->fd = 0;
-			free(file);
-			file = NULL;
-		}
-	}
-	return (file);
-}
-
 void			cache_dtor(void *cache_)
 {
 	t_file_cache *cache;
+
 	cache = (t_file_cache*)cache_;
 	cache->fd = 0;
 	f_lstdel(&cache->lines, ft_gen_strdel);
