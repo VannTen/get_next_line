@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/16 12:01:34 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/23 18:21:20 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,15 @@
 ** It does so until it find a line delimiter or the end of the file.
 */
 
-int				ft_read_file(char **line_to_complete, int fd)
+int				ft_read_file(char **line_to_complete,
+							const int fd, size_t length)
 {
 	char	buf[BUF_SIZE + 1];
 	char	*completed_line;
 	t_bool	is_complete;
 	int		oct_read;
-	int		length;
 
 	is_complete = FALSE;
-	length = (*line_to_complete == NULL) ? 0 : ft_strlen(*line_to_complete);
 	while (!is_complete)
 	{
 		oct_read = read(fd, &buf, BUF_SIZE);
