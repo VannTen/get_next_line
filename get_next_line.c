@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 10:36:07 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/16 12:01:34 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/24 14:42:58 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 int				ft_read_file(char **line_to_complete, int fd)
 {
-	char	buf[BUF_SIZE + 1];
+	char	buf[BUFF_SIZE + 1];
 	char	*completed_line;
 	t_bool	is_complete;
 	int		oct_read;
@@ -34,7 +34,7 @@ int				ft_read_file(char **line_to_complete, int fd)
 	length = (*line_to_complete == NULL) ? 0 : ft_strlen(*line_to_complete);
 	while (!is_complete)
 	{
-		oct_read = read(fd, &buf, BUF_SIZE);
+		oct_read = read(fd, &buf, BUFF_SIZE);
 		if (oct_read == READ_ERROR)
 			return (READ_ERROR);
 		buf[oct_read] = '\0';
@@ -45,7 +45,7 @@ int				ft_read_file(char **line_to_complete, int fd)
 		ft_strdel(line_to_complete);
 		*line_to_complete = completed_line;
 		is_complete = (ft_memchr(buf, LINE_DELIMITER, oct_read) != NULL
-				|| oct_read != BUF_SIZE);
+				|| oct_read != BUFF_SIZE);
 	}
 	return (oct_read);
 }
@@ -70,7 +70,7 @@ int				ft_read_cache(t_file_cache *file, char **line)
 		ft_strdel(&bufferized_line);
 		if (read_result == READ_ERROR || file->lines == NULL)
 			return (READ_ERROR);
-		else if (read_result != BUF_SIZE)
+		else if (read_result != BUFF_SIZE)
 			file->is_over = TRUE;
 		bufferized_line = (char*)f_lstpop(&file->lines);
 	}

@@ -6,7 +6,7 @@
 /*   By: mgautier <mgautier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/06 18:23:03 by mgautier          #+#    #+#             */
-/*   Updated: 2017/01/06 15:03:46 by mgautier         ###   ########.fr       */
+/*   Updated: 2017/01/24 14:42:24 by mgautier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # define READ_ERROR -1
 # define FILE_IS_OVER 0
 # define LINE_DELIMITER '\n'
-# define BUF_SIZE 10
+# define BUFF_SIZE 100
 
 /*
 ** Types definitions
